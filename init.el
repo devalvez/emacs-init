@@ -11,8 +11,9 @@
 (prefer-coding-system 'utf-8)
 (setq auto-save-default nil)
 (setq backup-inhibited t)
-(setq-default truncate-lines 1)
+(setq-default truncate-lines 2)
 (setq-default cursor-type 'box)
+;;(setq-default cursor-type '(bar . 1))
 (global-linum-mode t)
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
 (setq mouse-wheel-progressive-speed nil)
@@ -26,10 +27,20 @@
 (defvar blink-cursor-interval-visible 0.1)
 
 (setq-default indicate-empty-lines t)
-;;(define-fringe-bitmap 'tilde [0 0 0 113 219 142 0 0] nil nil 'center)
-;;(setcdr (assq 'empty-line fringe-indicator-alist) 'tilde)
-;;(set-fringe-bitmap-face 'tilde 'font-lock-function-name-face)
-;;(setq-default indincate-empty-lines t)
+;; (define-fringe-bitmap 'tilde [0 0 0 113 219 142 0 0] nil nil 'center)
+;; (setcdr (assq 'empty-line fringe-indicator-alist) 'tilde)
+;; (set-fringe-bitmap-face 'tilde 'font-lock-function-name-face)
+;; (setq-default indincate-empty-lines t)
+
+;; (setq-default
+;;  whitespace-line-column 80
+;;  whitespace-style       '(face lines-tail))
+;; (add-hook 'prog-mode-hook #'whitespace-mode)
+
+;;condicional
+(when(>= emacs-major-version 27)
+  (setq-default fill-column 80)
+  (global-display-fill-column-indicator-mode))
 
 (require 'package)
 (setq package-enable-at-startup nil)
@@ -49,8 +60,51 @@
   :ensure t
   :config (paradox-enable))
 
+(use-package dashboard
+  :ensure t
+  :config
+  (dashboard-setup-startup-hook)
+  (setq dashboard-center-content t)
+  (setq dashboard-startup-banner "~/.emacs.d/emacs.png")
+  (setq dashboard-footer-icon (all-the-icons-octicon "flame"
+                                                    :height 1.1
+                                                    :v-adjust -0.05
+                                                    :face 'font-lock-keyword-face))
+  (setq dashboard-items '((recents  . 5)
+                          (projects . 5)))
+  (setq dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name)
+  (defun dashboard-insert-custom (list-size)
+    (insert "The End"))
+  (add-to-list 'dashboard-item-generators  '(custom . dashboard-insert-custom))
+  (add-to-list 'dashboard-items '(custom) t)
+
+  (setq dashboard-set-navigator t)
+  
+  (setq dashboard-navigator-buttons
+        `(;; line1
+          ((,(all-the-icons-faicon "github" :height 1.1 :v-adjust 0.0)
+            "Github"
+            "github.com/devalvez"
+            (lambda (&rest _) (browse-url "https://github.com/devalvez")))
+
+           (,(all-the-icons-faicon "gitlab" :height 1.1 :v-adjust 0.0)
+            "GitLab"
+            "gitlab.com/WesleyAntonioAlves"
+            (lambda (&rest _) (browse-url "https://gitlab.com/WesleyAntonioAlves")))
+
+           (,(all-the-icons-faicon "bitbucket" :height 1.1 :v-adjust 0.0)
+            "Bitbucket"
+            "bitbucket.org/WesleyAntonioAlves/"
+            (lambda (&rest _) (browse-url "https://bitbucket.org/WesleyAntonioAlves/")))
+           
+           ))))
+
 (use-package try
   :ensure t)
+
+(use-package wakatime-mode
+  :ensure t)
+(global-wakatime-mode)
 
 (use-package google-translate
   :ensure t
@@ -59,43 +113,63 @@
 	 ("\C-cT" . 'google-translate-query-translate))
   :config (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130)))
 
+(use-package quelpa
+  :ensure t)
+
+(use-package quelpa-use-package
+  :ensure t)
+
+(when (>= emacs-major-version 27)
+(use-package blamer
+  :quelpa (blamer :fetcher github :repo "artawower/blamer.el")
+  (blamer-idle-time 0.3)
+  (blamer-min-offset 70)
+  :config
+  (setq blamer-author-formatter " ✎ %s ")
+  (setq blamer-commit-formatter "● %s")
+  (setq blamer-type 'both)
+  (setq blamer-prettify-time-p t)
+  (global-blamer-mode 1)))
+
 ;;Theme
 (use-package kaolin-themes
   :ensure t
-  :config (load-theme 'kaolin-bubblegum t))
+  :config (load-theme 'kaolin-aurora t))
 
 (use-package spaceline
   :ensure t)
 
 (use-package magit
   :ensure t)
-(load-file "~/.emacs.d/custom/magit-blame-styles/magit-blame.el")
 
-(use-package spaceline-all-the-icons
-  :ensure t
-  :after spaceline
-  :config (spaceline-all-the-icons-theme 'your-segment-symbol "Wesley A. Alves" 'etc)
-  ;; Enable anzu searching
-  (spaceline-all-the-icons--setup-anzu)
-  ;; Enable package update indicator
-  (spaceline-all-the-icons--setup-package-updates)
-  ;; Enable # of commits ahead of upstream in git
-  (spaceline-all-the-icons--setup-git-ahead)
-  ;; Enable Paradox mode line
-  (spaceline-all-the-icons--setup-paradox)
-  ;; Enable Neotree mode line
-  (spaceline-all-the-icons--setup-neotree)
-  ;; Change Icons
-  (setq spaceline-all-the-icons-icon-set-modified 'circle)
-  (setq spaceline-all-the-icons-icon-set-bookmark 'bookmark)
-  (setq spaceline-all-the-icons-icon-set-dedicated 'pin)
-  (setq spaceline-all-the-icons-icon-set-window-numbering 'circle)
-  (setq spaceline-all-the-icons-icon-set-window-eyebrowse-workspace 'circle)
-  (setq spaceline-all-the-icons-icon-set-multiple-cursors 'caret)
-  (setq spaceline-all-the-icons-icon-set-git-stats 'git-stats)
-  (setq spaceline-all-the-icons-icon-set-flycheck-slim 'git-stats)
-  (setq spaceline-all-the-icons-icon-set-sun-time 'sun/moon)
-  (setq spaceline-all-the-icons-separator-type 'slant))
+(use-package minimap
+  :ensure t)
+
+;; (use-package spaceline-all-the-icons
+;;   :ensure t
+;;   :after spaceline
+;;   :config (spaceline-all-the-icons-theme 'your-segment-symbol "Wesley A. Alves" 'etc)
+;;   ;; Enable anzu searching
+;;   (spaceline-all-the-icons--setup-anzu)
+;;   ;; Enable package update indicator
+;;   (spaceline-all-the-icons--setup-package-updates)
+;;   ;; Enable # of commits ahead of upstream in git
+;;   (spaceline-all-the-icons--setup-git-ahead)
+;;   ;; Enable Paradox mode line
+;;   (spaceline-all-the-icons--setup-paradox)
+;;   ;; Enable Neotree mode line
+;;   (spaceline-all-the-icons--setup-neotree)
+;;   ;; Change Icons
+;;   (setq spaceline-all-the-icons-icon-set-modified 'circle)
+;;   (setq spaceline-all-the-icons-icon-set-bookmark 'bookmark)
+;;   (setq spaceline-all-the-icons-icon-set-dedicated 'pin)
+;;   (setq spaceline-all-the-icons-icon-set-window-numbering 'circle)
+;;   (setq spaceline-all-the-icons-icon-set-window-eyebrowse-workspace 'circle)
+;;   (setq spaceline-all-the-icons-icon-set-multiple-cursors 'caret)
+;;   (setq spaceline-all-the-icons-icon-set-git-stats 'git-stats)
+;;   (setq spaceline-all-the-icons-icon-set-flycheck-slim 'git-stats)
+;;   (setq spaceline-all-the-icons-icon-set-sun-time 'sun/moon)
+;;   (setq spaceline-all-the-icons-separator-type 'slant))
 
 (use-package avy
   :ensure t)
@@ -124,6 +198,13 @@
   (define-key global-map [remap execute-extended-command] #'helm-M-x)
   (define-key global-map [remap switch-to-buffer] #'helm-mini))
 
+(use-package indent-guide
+  :ensure t
+  :init (indent-guide-global-mode))
+
+(use-package mysql-to-org
+  :ensure t)
+
 (use-package helm-lsp
   :ensure t)
 
@@ -149,22 +230,35 @@
   :ensure t
   :config (add-hook 'after-init-hook 'global-company-mode))
 
-(use-package flycheck
-  :ensure t
-  :init (global-flycheck-mode)
-  :config
-  (add-hook 'typescript-mode-hook 'flycheck-mode))
+(add-to-list 'load-path "~/.emacs.d/libs/flycheck")
+(require 'flycheck)
+(global-flycheck-mode)
 
-(use-package flycheck-posframe
-  :ensure t
-  :after flycheck
-  :config
-  (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
-  (set-face-attribute 'flycheck-posframe-info-face nil :inherit 'info)
-  (set-face-attribute 'flycheck-posframe-warning-face nil :inherit 'warning)
-  (set-face-attribute 'flycheck-posframe-error-face nil :inherit 'error)
-  (setq flycheck-posframe-warning-prefix "\u26a0 ")
-  (setq flycheck-posframe-border-width 10))
+
+;; (use-package flycheck
+;;   :init (global-flycheck-mode)
+;;   :ensure t)
+
+;; (use-package flycheck-posframe
+;;   :ensure t
+;;   :after flycheck
+;;   :config
+;;   (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
+;;   (set-face-attribute 'flycheck-posframe-info-face nil :inherit 'info)
+;;   (set-face-attribute 'flycheck-posframe-warning-face nil :inherit 'warning)
+;;   (set-face-attribute 'flycheck-posframe-error-face nil :inherit 'error)
+;;   (setq flycheck-posframe-warning-prefix "\u26a0 ")
+;;   (setq flycheck-posframe-border-width 10))
+
+(add-to-list 'load-path "~/.emacs.d/libs/flycheck-posframe")
+(require 'flycheck-posframe)
+(global-flycheck-mode)
+(add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
+(set-face-attribute 'flycheck-posframe-info-face nil :inherit 'info)
+(set-face-attribute 'flycheck-posframe-warning-face nil :inherit 'warning)
+(set-face-attribute 'flycheck-posframe-error-face nil :inherit 'error)
+(setq flycheck-posframe-warning-prefix "\u26a0 ")
+(setq flycheck-posframe-border-width 10)
 
 (use-package rainbow-mode
   :ensure t
@@ -312,12 +406,7 @@
 (use-package markdown-mode
   :ensure t)
 
-;; To work Typescript
-(use-package flycheck
-  :ensure t
-  :config
-  (add-hook 'typescript-mode-hook 'flycheck-mode))
- 
+
 (defun setup-tide-mode ()
   (interactive)
   (tide-setup)
@@ -329,7 +418,13 @@
   ;; install it separately via package-install
   ;; `M-x package-install [ret] company`
   (company-mode +1))
- 
+;; aligns annotation to the right hand side
+(setq company-tooltip-align-annotations t)
+;; formats the buffer before saving
+(add-hook 'before-save-hook 'tide-format-before-save)
+(add-hook 'typescript-mode-hook #'setup-tide-mode)
+(setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil))
+
 (use-package company
   :ensure t
   :config
@@ -370,7 +465,8 @@
               (when (string-equal "tsx" (file-name-extension buffer-file-name))
 		(setup-tide-mode))))
   ;; enable typescript-tslint checker
-  (flycheck-add-mode 'typescript-tslint 'web-mode))
+  ;;(flycheck-add-mode 'typescript-tslint 'web-mode)
+  )
  
 (use-package typescript-mode
   :ensure t
@@ -379,18 +475,22 @@
   (add-hook 'typescript-mode #'subword-mode))
  
 (use-package tide
-  :init
   :ensure t
   :after (typescript-mode company flycheck)
   :hook ((typescript-mode . tide-setup)
-         (typescript-mode . tide-hl-identifier-mode)))
+         (typescript-mode . tide-hl-identifier-mode)
+         (before-save . tide-format-before-save)))
  
 (use-package css-mode
   :config
 (setq css-indent-offset 2))
 ;; End To Work TypeScript
 
-
+;; bookmarks stuff--
+(define-key global-map [f9] 'bookmark-jump)
+(define-key global-map [f11] 'bookmark-set)
+(setq bookmark-default-file "~/.emacs.d/bookmarks")  ;;define file to use.
+(setq bookmark-save-flag 1)  ;save bookmarks to .emacs.bmk after each entry
 
 ;;Hideshow
 (add-to-list 'load-path "~/.emacs.d/elpa/hideshowvis/")
@@ -595,6 +695,9 @@ the end of the line for hidden regions."
 (global-set-key [\M-up] 'move-text-up)
 (global-set-key [\M-down] 'move-text-down)
 
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 2)
+(setq indent-line-function 'insert-tab)
 
 (require 'helm-xref)
 (define-key global-map [remap find-file] #'helm-find-files)
@@ -612,26 +715,32 @@ the end of the line for hidden regions."
   (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
   (yas-global-mode))
 
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("3c7a784b90f7abebb213869a21e84da462c26a1fda7e5bd0ffebf6ba12dbd041" default))
+ '(minimap-minimum-width 20)
+ '(minimap-mode t)
+ '(minimap-recreate-window nil)
+ '(minimap-window-location 'right)
  '(neo-theme 'nerd)
  '(package-selected-packages
-   '(flycheck-posframe magit spaceline json-mode dap-mode typescript-mode company google-translate js-import projectile try helm-lsp web-beautify fix-word switch-window ac-php dotenv-mode lsp-treemacs yasnippet-snippets lsp-mode helm-xref auto-rename-tag winum multiple-cursors neotree emmet-mode evil-nerd-commenter undo-tree all-the-icons which-key evil rainbow-delimiters ace-jump-mode ace-jump quick-peek flycheck-inline flycheck smex helm anzu smartparens kaolin-themes use-package))
+   '(wakatime-mode minimap blamer a quelpa-use-package quelpa indent-guide mysql-to-org flycheck-posframe magit spaceline json-mode dap-mode typescript-mode company google-translate js-import projectile try helm-lsp web-beautify fix-word switch-window ac-php dotenv-mode lsp-treemacs yasnippet-snippets lsp-mode helm-xref auto-rename-tag winum multiple-cursors neotree emmet-mode evil-nerd-commenter undo-tree all-the-icons which-key evil rainbow-delimiters ace-jump-mode ace-jump quick-peek flycheck-inline flycheck smex helm anzu smartparens kaolin-themes use-package))
  '(paradox-github-token t)
  '(show-paren-mode t)
- '(tool-bar-mode nil))
+ '(tool-bar-mode nil)
+ '(wakatime-api-key "47441236-aaab-4920-8a43-3dea8608abb6"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Fira Code" :foundry "CTDB" :slant normal :weight normal :height 105 :width normal)))))
+ '(default ((t (:family "Fira Code" :foundry "CTDB" :slant normal :weight normal :height 105 :width normal))))
+ '(minimap-active-region-background ((t (:extend t :background "#252525")))))
 ;; Local Variables:
 ;; byte-compile-warnings: (not free-vars)
 ;; End
 ;;; init.el ends here
-
