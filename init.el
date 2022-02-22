@@ -6,14 +6,14 @@
 ;;
 (menu-bar-mode -1)
 (tool-bar-mode -1)
-(scroll-bar-mode -1)
+;;(scroll-bar-mode -1)
 (set-default-coding-systems 'utf-8)
 (prefer-coding-system 'utf-8)
 (setq auto-save-default nil)
 (setq backup-inhibited t)
-(setq-default truncate-lines 2)
+(setq-default truncate-lines 1)
 (setq-default cursor-type 'box)
-;;(setq-default cursor-type '(bar . 1))
+;;(setq-default cursor-type '(bar . 2))
 (global-linum-mode t)
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
 (setq mouse-wheel-progressive-speed nil)
@@ -26,11 +26,13 @@
 (global-hl-line-mode)
 (defvar blink-cursor-interval-visible 0.1)
 
+(global-wakatime-mode)
+
 (setq-default indicate-empty-lines t)
-;; (define-fringe-bitmap 'tilde [0 0 0 113 219 142 0 0] nil nil 'center)
-;; (setcdr (assq 'empty-line fringe-indicator-alist) 'tilde)
-;; (set-fringe-bitmap-face 'tilde 'font-lock-function-name-face)
-;; (setq-default indincate-empty-lines t)
+(define-fringe-bitmap 'tilde [0 0 0 113 219 142 0 0] nil nil 'center)
+(setcdr (assq 'empty-line fringe-indicator-alist) 'tilde)
+(set-fringe-bitmap-face 'tilde 'font-lock-function-name-face)
+(setq-default indincate-empty-lines t)
 
 ;; (setq-default
 ;;  whitespace-line-column 80
@@ -56,6 +58,9 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
+;;(require 'theme-magic)
+;;(theme-magic-export-theme-mode)
+
 (use-package paradox
   :ensure t
   :config (paradox-enable))
@@ -65,11 +70,11 @@
   :config
   (dashboard-setup-startup-hook)
   (setq dashboard-center-content t)
-  (setq dashboard-startup-banner "~/.emacs.d/emacs.png")
+  (setq dashboard-startup-banner "~/.emacs.d/banner.png")
   (setq dashboard-footer-icon (all-the-icons-octicon "flame"
-                                                    :height 1.1
-                                                    :v-adjust -0.05
-                                                    :face 'font-lock-keyword-face))
+                                                     :height 1
+                                                     :v-adjust -0.05
+                                                     :face 'font-lock-keyword-face))
   (setq dashboard-items '((recents  . 5)
                           (projects . 5)))
   (setq dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name)
@@ -109,8 +114,8 @@
 (use-package google-translate
   :ensure t
   :bind (
-	 ("\C-ct" . 'google-translate-at-point)
-	 ("\C-cT" . 'google-translate-query-translate))
+	       ("\C-ct" . 'google-translate-at-point)
+	       ("\C-cT" . 'google-translate-query-translate))
   :config (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130)))
 
 (use-package quelpa
@@ -119,22 +124,22 @@
 (use-package quelpa-use-package
   :ensure t)
 
-(when (>= emacs-major-version 27)
 (use-package blamer
   :quelpa (blamer :fetcher github :repo "artawower/blamer.el")
   (blamer-idle-time 0.3)
   (blamer-min-offset 70)
+  :custom-face
+  (blamer-face ((t :foreground "#7a88cf"
+                   :background nil
+                   :height 98
+                   :italic t)))
   :config
-  (setq blamer-author-formatter " ✎ %s ")
-  (setq blamer-commit-formatter "● %s")
-  (setq blamer-type 'both)
-  (setq blamer-prettify-time-p t)
-  (global-blamer-mode 1)))
+  (global-blamer-mode 1))
 
 ;;Theme
 (use-package kaolin-themes
   :ensure t
-  :config (load-theme 'kaolin-aurora t))
+  :config (load-theme 'kaolin-dark t))
 
 (use-package spaceline
   :ensure t)
@@ -144,6 +149,15 @@
 
 (use-package minimap
   :ensure t)
+
+(use-package highlight-defined
+  :ensure t
+  :init (add-hook 'emacs-lisp-mode-hook 'highlight-defined-mode))
+
+(use-package highlight-numbers
+  :ensure t
+  :config
+  (add-hook 'prog-mode-hook 'highlight-numbers-mode))
 
 ;; (use-package spaceline-all-the-icons
 ;;   :ensure t
@@ -198,9 +212,13 @@
   (define-key global-map [remap execute-extended-command] #'helm-M-x)
   (define-key global-map [remap switch-to-buffer] #'helm-mini))
 
-(use-package indent-guide
+;; (use-package indent-guide
+;;   :ensure t
+;;   :init (indent-guide-global-mode))
+
+(use-package highlight-indent-guides
   :ensure t
-  :init (indent-guide-global-mode))
+  :config (add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
 
 (use-package mysql-to-org
   :ensure t)
@@ -230,35 +248,35 @@
   :ensure t
   :config (add-hook 'after-init-hook 'global-company-mode))
 
-(add-to-list 'load-path "~/.emacs.d/libs/flycheck")
-(require 'flycheck)
-(global-flycheck-mode)
+;; (add-to-list 'load-path "~/.emacs.d/libs/flycheck")
+;; (require 'flycheck)
+;; (global-flycheck-mode)
 
 
-;; (use-package flycheck
-;;   :init (global-flycheck-mode)
-;;   :ensure t)
+(use-package flycheck
+  :init (global-flycheck-mode)
+  :ensure t)
 
-;; (use-package flycheck-posframe
-;;   :ensure t
-;;   :after flycheck
-;;   :config
-;;   (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
-;;   (set-face-attribute 'flycheck-posframe-info-face nil :inherit 'info)
-;;   (set-face-attribute 'flycheck-posframe-warning-face nil :inherit 'warning)
-;;   (set-face-attribute 'flycheck-posframe-error-face nil :inherit 'error)
-;;   (setq flycheck-posframe-warning-prefix "\u26a0 ")
-;;   (setq flycheck-posframe-border-width 10))
+(use-package flycheck-posframe
+  :ensure t
+  :after flycheck
+  :config
+  (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
+  (set-face-attribute 'flycheck-posframe-info-face nil :inherit 'info)
+  (set-face-attribute 'flycheck-posframe-warning-face nil :inherit 'warning)
+  (set-face-attribute 'flycheck-posframe-error-face nil :inherit 'error)
+  (setq flycheck-posframe-warning-prefix "\u26a0 ")
+  (setq flycheck-posframe-border-width 10))
 
-(add-to-list 'load-path "~/.emacs.d/libs/flycheck-posframe")
-(require 'flycheck-posframe)
-(global-flycheck-mode)
-(add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
-(set-face-attribute 'flycheck-posframe-info-face nil :inherit 'info)
-(set-face-attribute 'flycheck-posframe-warning-face nil :inherit 'warning)
-(set-face-attribute 'flycheck-posframe-error-face nil :inherit 'error)
-(setq flycheck-posframe-warning-prefix "\u26a0 ")
-(setq flycheck-posframe-border-width 10)
+;; (add-to-list 'load-path "~/.emacs.d/libs/flycheck-posframe")
+;; (require 'flycheck-posframe)
+;; (global-flycheck-mode)
+;; (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
+;; (set-face-attribute 'flycheck-posframe-info-face nil :inherit 'info)
+;; (set-face-attribute 'flycheck-posframe-warning-face nil :inherit 'warning)
+;; (set-face-attribute 'flycheck-posframe-error-face nil :inherit 'error)
+;; (setq flycheck-posframe-warning-prefix "\u26a0 ")
+;; (setq flycheck-posframe-border-width 10)
 
 (use-package rainbow-mode
   :ensure t
@@ -296,11 +314,11 @@
 (use-package multiple-cursors
   :ensure t
   :bind (
-	 ("C->" . 'mc/mark-next-like-this)
-	 ("C-<" . 'mc/mark-previous-like-this)
-	 ("C-+" . 'mc/mark-all-like-this)
-	 ("C-S-<mouse-1>" . 'mc/add-cursor-on-click)
-	 ("C-S-<mouse-1>" . 'mc/add-cursor-on-click)))
+	       ("C->" . 'mc/mark-next-like-this)
+	       ("C-<" . 'mc/mark-previous-like-this)
+	       ("C-+" . 'mc/mark-all-like-this)
+	       ("C-S-<mouse-1>" . 'mc/add-cursor-on-click)
+	       ("C-S-<mouse-1>" . 'mc/add-cursor-on-click)))
 
 (use-package switch-window
   :ensure t
@@ -347,9 +365,9 @@
   :ensure t
   :config (yas-global-mode 1)
   (setq yas-snippet-dirs
-	;; personal snippets
-	'("~/.emacs.d/snippets"
-	  ;; foo-mode and bar-mode snippet collection
+	      ;; personal snippets
+	      '("~/.emacs.d/snippets"
+	        ;; foo-mode and bar-mode snippet collection
           "~/.emacs.d/yasnippet-snippets-20210408.1234/snippets"
           )))
 
@@ -366,7 +384,7 @@
 (use-package dap-mode
   :ensure t
   :init (add-hook 'dap-stopped-hook
-		  (lambda (arg) (call-interactively #'dap-hydra))))
+		              (lambda (arg) (call-interactively #'dap-hydra))))
 
 (use-package js-import
   :ensure t)
@@ -394,8 +412,8 @@
 (use-package php-mode
   :ensure t
   :config (with-eval-after-load 'php-mode
-	    (define-key php-mode-map (kbd "C-c C--") 'php-current-class)
-	    (define-key php-mode-map (kbd "C-c C-=") 'php-current-namespace)))
+	          (define-key php-mode-map (kbd "C-c C--") 'php-current-class)
+	          (define-key php-mode-map (kbd "C-c C-=") 'php-current-namespace)))
 
 (use-package ac-php
   :ensure t)
@@ -434,7 +452,7 @@
   ;; is displayed on top (happens near the bottom of windows)
   (setq company-tooltip-flip-when-above t)
   (global-company-mode))
- 
+
 (use-package company-quickhelp
   :ensure t
   :init
@@ -453,37 +471,37 @@
         web-mode-code-indent-offset 2
         web-mode-block-padding 2
         web-mode-comment-style 2
- 
+        
         web-mode-enable-css-colorization t
         web-mode-enable-auto-pairing t
         web-mode-enable-comment-keywords t
         web-mode-enable-current-element-highlight t
-	web-mode-enable-auto-indentation nil
+	      web-mode-enable-auto-indentation nil
         )
   (add-hook 'web-mode-hook
             (lambda ()
               (when (string-equal "tsx" (file-name-extension buffer-file-name))
-		(setup-tide-mode))))
+		            (setup-tide-mode))))
   ;; enable typescript-tslint checker
   ;;(flycheck-add-mode 'typescript-tslint 'web-mode)
   )
- 
+
 (use-package typescript-mode
   :ensure t
   :config
   (setq typescript-indent-level 2)
   (add-hook 'typescript-mode #'subword-mode))
- 
+
 (use-package tide
   :ensure t
   :after (typescript-mode company flycheck)
   :hook ((typescript-mode . tide-setup)
          (typescript-mode . tide-hl-identifier-mode)
          (before-save . tide-format-before-save)))
- 
+
 (use-package css-mode
   :config
-(setq css-indent-offset 2))
+  (setq css-indent-offset 2))
 ;; End To Work TypeScript
 
 ;; bookmarks stuff--
@@ -661,37 +679,37 @@ the end of the line for hidden regions."
 (global-set-key (kbd "C-d") 'duplicate-line)
 
 (defun move-text-internal (arg)
-   (cond
-    ((and mark-active transient-mark-mode)
-     (if (> (point) (mark))
-            (exchange-point-and-mark))
-     (let ((column (current-column))
-              (text (delete-and-extract-region (point) (mark))))
-       (forward-line arg)
-       (move-to-column column t)
-       (set-mark (point))
-       (insert text)
-       (exchange-point-and-mark)
-       (setq deactivate-mark nil)))
-    (t
-     (beginning-of-line)
-     (when (or (> arg 0) (not (bobp)))
-       (forward-line)
-       (when (or (< arg 0) (not (eobp)))
-            (transpose-lines arg))
-       (forward-line -1)))))
+  (cond
+   ((and mark-active transient-mark-mode)
+    (if (> (point) (mark))
+        (exchange-point-and-mark))
+    (let ((column (current-column))
+          (text (delete-and-extract-region (point) (mark))))
+      (forward-line arg)
+      (move-to-column column t)
+      (set-mark (point))
+      (insert text)
+      (exchange-point-and-mark)
+      (setq deactivate-mark nil)))
+   (t
+    (beginning-of-line)
+    (when (or (> arg 0) (not (bobp)))
+      (forward-line)
+      (when (or (< arg 0) (not (eobp)))
+        (transpose-lines arg))
+      (forward-line -1)))))
 
 (defun move-text-down (arg)
-   "Move region (transient-mark-mode active) or current line
+  "Move region (transient-mark-mode active) or current line
   arg lines down."
-   (interactive "*p")
-   (move-text-internal arg))
+  (interactive "*p")
+  (move-text-internal arg))
 
 (defun move-text-up (arg)
-   "Move region (t'ransient-mark-mode active) or current line
+  "Move region (t'ransient-mark-mode active) or current line
   arg lines up."
-   (interactive "*p")
-   (move-text-internal (- arg)))
+  (interactive "*p")
+  (move-text-internal (- arg)))
 (global-set-key [\M-up] 'move-text-up)
 (global-set-key [\M-down] 'move-text-down)
 
@@ -721,25 +739,36 @@ the end of the line for hidden regions."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("3c7a784b90f7abebb213869a21e84da462c26a1fda7e5bd0ffebf6ba12dbd041" default))
+   '("28eb6d962d45df4b2cf8d861a4b5610e5dece44972e61d0604c44c4aad1e8a9d" "3c7a784b90f7abebb213869a21e84da462c26a1fda7e5bd0ffebf6ba12dbd041" default))
+ '(highlight-indent-guides-method 'character)
  '(minimap-minimum-width 20)
- '(minimap-mode t)
+ '(minimap-mode nil)
  '(minimap-recreate-window nil)
  '(minimap-window-location 'right)
  '(neo-theme 'nerd)
  '(package-selected-packages
-   '(wakatime-mode minimap blamer a quelpa-use-package quelpa indent-guide mysql-to-org flycheck-posframe magit spaceline json-mode dap-mode typescript-mode company google-translate js-import projectile try helm-lsp web-beautify fix-word switch-window ac-php dotenv-mode lsp-treemacs yasnippet-snippets lsp-mode helm-xref auto-rename-tag winum multiple-cursors neotree emmet-mode evil-nerd-commenter undo-tree all-the-icons which-key evil rainbow-delimiters ace-jump-mode ace-jump quick-peek flycheck-inline flycheck smex helm anzu smartparens kaolin-themes use-package))
+   '(highlight-defined sublime-themes green-is-the-new-black-theme green-phosphor-theme theme-magic wakatime-mode minimap blamer a quelpa-use-package quelpa indent-guide mysql-to-org flycheck-posframe magit spaceline json-mode dap-mode typescript-mode company google-translate js-import projectile try helm-lsp web-beautify fix-word switch-window ac-php dotenv-mode lsp-treemacs yasnippet-snippets lsp-mode helm-xref auto-rename-tag winum multiple-cursors neotree emmet-mode evil-nerd-commenter undo-tree all-the-icons which-key evil rainbow-delimiters ace-jump-mode ace-jump quick-peek flycheck-inline flycheck smex helm anzu smartparens kaolin-themes use-package))
  '(paradox-github-token t)
  '(show-paren-mode t)
  '(tool-bar-mode nil)
- '(wakatime-api-key "47441236-aaab-4920-8a43-3dea8608abb6"))
+ '(wakatime-api-key "47441236-aaab-4920-8a43-3dea8608abb6")
+ '(wakatime-cli-path "wakatime-cli"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Fira Code" :foundry "CTDB" :slant normal :weight normal :height 105 :width normal))))
- '(minimap-active-region-background ((t (:extend t :background "#252525")))))
+ '(default ((t (:background nil :family "Source Code Pro" :foundry "ADBO" :slant normal :weight normal :height 113 :width normal))))
+ '(blamer-face ((t :foreground "#7a88cf" :background nil :height 98 :italic t)))
+ '(minimap-active-region-background ((t (:extend t :background "#252525"))))
+ '(rainbow-delimiters-depth-1-face ((t (:foreground "dark orange"))))
+ '(rainbow-delimiters-depth-2-face ((t (:foreground "deep pink"))))
+ '(rainbow-delimiters-depth-3-face ((t (:foreground "chartreuse"))))
+ '(rainbow-delimiters-depth-4-face ((t (:foreground "deep sky blue"))))
+ '(rainbow-delimiters-depth-5-face ((t (:foreground "yellow"))))
+ '(rainbow-delimiters-depth-6-face ((t (:foreground "orchid"))))
+ '(rainbow-delimiters-depth-7-face ((t (:foreground "spring green"))))
+ '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1")))))
 ;; Local Variables:
 ;; byte-compile-warnings: (not free-vars)
 ;; End
