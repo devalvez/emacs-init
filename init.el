@@ -6,7 +6,7 @@
 ;;
 (menu-bar-mode -1)
 (tool-bar-mode -1)
-;;(scroll-bar-mode -1)
+(scroll-bar-mode -1)
 (set-default-coding-systems 'utf-8)
 (prefer-coding-system 'utf-8)
 (setq auto-save-default nil)
@@ -26,7 +26,101 @@
 (global-hl-line-mode)
 (defvar blink-cursor-interval-visible 0.1)
 
-(global-wakatime-mode)
+(add-to-list 'load-path "~/.emacs.d/vendor/doom-modeline/")
+(require 'doom-modeline)
+(doom-modeline-mode 1)
+(setq doom-modeline-project-detection 'auto)
+(setq doom-modeline-buffer-file-name-style 'auto)
+(setq doom-modeline-icon (display-graphic-p))
+(setq doom-modeline-major-mode-icon t)
+(setq doom-modeline-major-mode-color-icon t)
+(setq doom-modeline-buffer-modification-icon t)
+(setq doom-modeline-unicode-fallback nil)
+(setq doom-modeline-minor-modes nil)
+(setq doom-modeline-enable-word-count nil)
+(setq doom-modeline-continuous-word-count-modes '(markdown-mode gfm-mode org-mode))
+;; Whether display the buffer encoding.
+(setq doom-modeline-buffer-encoding t)
+;; Whether display the indentation information.
+(setq doom-modeline-indent-info nil)
+;; If non-nil, only display one number for checker information if applicable.
+(setq doom-modeline-checker-simple-format t)
+;; The maximum number displayed for notifications.
+(setq doom-modeline-number-limit 99)
+;; The maximum displayed length of the branch name of version control.
+(setq doom-modeline-vcs-max-length 12)
+;; Whether display the workspace name. Non-nil to display in the mode-line.
+(setq doom-modeline-workspace-name t)
+;; How tall the mode-line should be. It's only respected in GUI.
+;; If the actual char height is larger, it respects the actual height.
+(setq doom-modeline-height 30)
+;; Whether display the perspective name. Non-nil to display in the mode-line.
+(setq doom-modeline-persp-name t)
+;; If non nil the default perspective name is displayed in the mode-line.
+(setq doom-modeline-display-default-persp-name nil)
+;; If non nil the perspective name is displayed alongside a folder icon.
+(setq doom-modeline-persp-icon t)
+;; How wide the mode-line bar should be. It's only respected in GUI.
+(setq doom-modeline-bar-width 4)
+;; Whether to use hud instead of default bar. It's only respected in GUI.
+(setq doom-modeline-hud nil)
+;; The limit of the window width.
+(setq doom-modeline-window-width-limit fill-column)
+(setq doom-modeline-lsp t)
+(setq doom-modeline-github nil)
+(setq doom-modeline-github-interval (* 30 60))
+(setq doom-modeline-modal-icon t)
+(setq doom-modeline-mu4e nil)
+;; Whether display the gnus notifications.
+(setq doom-modeline-gnus t)
+;; Whether gnus should automatically be updated and how often (set to 0 or smaller than 0 to disable)
+(setq doom-modeline-gnus-timer 2)
+;; Wheter groups should be excludede when gnus automatically being updated.
+(setq doom-modeline-gnus-excluded-groups '("dummy.group"))
+;; Function to stylize the irc buffer names.
+(setq doom-modeline-irc-stylize 'identity)
+;; Whether display the environment version.
+(setq doom-modeline-env-version t)
+;; Or for individual languages
+(setq doom-modeline-env-enable-python t)
+(setq doom-modeline-env-enable-ruby t)
+(setq doom-modeline-env-enable-perl t)
+(setq doom-modeline-env-enable-go t)
+(setq doom-modeline-env-enable-elixir t)
+(setq doom-modeline-env-enable-rust t)
+;; Change the executables to use for the language version string
+(setq doom-modeline-env-python-executable "python")
+(setq doom-modeline-env-ruby-executable "ruby")
+(setq doom-modeline-env-perl-executable "perl")
+(setq doom-modeline-env-go-executable "go")
+(setq doom-modeline-env-elixir-executable "iex")
+(setq doom-modeline-env-rust-executable "rustc")
+;; What to display as the version while a new one is being loaded
+(setq doom-modeline-env-load-string "...")
+;; Hooks that run before/after the modeline version string is updated
+(setq doom-modeline-before-update-env-hook nil)
+(setq doom-modeline-after-update-env-hook nil)
+(setq inhibit-compacting-font-caches t)
+(setq find-file-visit-truename t)
+(setq auto-revert-check-vc-info t)
+;; Define your custom doom-modeline
+(doom-modeline-def-modeline 'my-simple-line
+  '(bar matches buffer-info remote-host buffer-position parrot selection-info)
+  '(misc-info minor-modes input-method buffer-encoding major-mode process vcs checker))
+;; Add to `doom-modeline-mode-hook` or other hooks
+(defun setup-custom-doom-modeline ()
+  (doom-modeline-set-modeline 'my-simple-line 'default))
+(add-hook 'doom-modeline-mode-hook 'setup-custom-doom-modeline)
+(setq doom-modeline-height 1)
+(set-face-attribute 'mode-line nil :family "Fira Code" :height 100)
+(set-face-attribute 'mode-line-inactive nil :family "Fira Code" :height 100)
+(setq doom-modeline-project-detection 'project)
+(setq doom-modeline-project-detection 'ffip)
+(add-hook 'inferior-ess-mode-hook
+      (lambda ()
+        (add-to-list 'mode-line-process '(:eval (nth ess--busy-count ess-busy-strings)))))
+
+
 
 (setq-default indicate-empty-lines t)
 (define-fringe-bitmap 'tilde [0 0 0 113 219 142 0 0] nil nil 'center)
@@ -34,10 +128,11 @@
 (set-fringe-bitmap-face 'tilde 'font-lock-function-name-face)
 (setq-default indincate-empty-lines t)
 
-;; (setq-default
-;;  whitespace-line-column 80
-;;  whitespace-style       '(face lines-tail))
-;; (add-hook 'prog-mode-hook #'whitespace-mode)
+(when(<= emacs-major-version 26)
+  (setq-default
+   whitespace-line-column 80
+   whitespace-style       '(face lines-tail))
+  (add-hook 'prog-mode-hook #'whitespace-mode))
 
 ;;condicional
 (when(>= emacs-major-version 27)
@@ -57,9 +152,6 @@
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
-
-;;(require 'theme-magic)
-;;(theme-magic-export-theme-mode)
 
 (use-package paradox
   :ensure t
@@ -159,6 +251,8 @@
   :config
   (add-hook 'prog-mode-hook 'highlight-numbers-mode))
 
+(global-wakatime-mode)
+
 ;; (use-package spaceline-all-the-icons
 ;;   :ensure t
 ;;   :after spaceline
@@ -212,13 +306,13 @@
   (define-key global-map [remap execute-extended-command] #'helm-M-x)
   (define-key global-map [remap switch-to-buffer] #'helm-mini))
 
-;; (use-package indent-guide
-;;   :ensure t
-;;   :init (indent-guide-global-mode))
-
-(use-package highlight-indent-guides
+(use-package indent-guide
   :ensure t
-  :config (add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
+  :init (indent-guide-global-mode))
+
+;; (use-package highlight-indent-guides
+;;   :ensure t
+;;   :config (add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
 
 (use-package mysql-to-org
   :ensure t)
@@ -248,11 +342,6 @@
   :ensure t
   :config (add-hook 'after-init-hook 'global-company-mode))
 
-;; (add-to-list 'load-path "~/.emacs.d/libs/flycheck")
-;; (require 'flycheck)
-;; (global-flycheck-mode)
-
-
 (use-package flycheck
   :init (global-flycheck-mode)
   :ensure t)
@@ -267,16 +356,6 @@
   (set-face-attribute 'flycheck-posframe-error-face nil :inherit 'error)
   (setq flycheck-posframe-warning-prefix "\u26a0 ")
   (setq flycheck-posframe-border-width 10))
-
-;; (add-to-list 'load-path "~/.emacs.d/libs/flycheck-posframe")
-;; (require 'flycheck-posframe)
-;; (global-flycheck-mode)
-;; (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
-;; (set-face-attribute 'flycheck-posframe-info-face nil :inherit 'info)
-;; (set-face-attribute 'flycheck-posframe-warning-face nil :inherit 'warning)
-;; (set-face-attribute 'flycheck-posframe-error-face nil :inherit 'error)
-;; (setq flycheck-posframe-warning-prefix "\u26a0 ")
-;; (setq flycheck-posframe-border-width 10)
 
 (use-package rainbow-mode
   :ensure t
@@ -424,7 +503,6 @@
 (use-package markdown-mode
   :ensure t)
 
-
 (defun setup-tide-mode ()
   (interactive)
   (tide-setup)
@@ -471,7 +549,7 @@
         web-mode-code-indent-offset 2
         web-mode-block-padding 2
         web-mode-comment-style 2
-        
+        ;;
         web-mode-enable-css-colorization t
         web-mode-enable-auto-pairing t
         web-mode-enable-comment-keywords t
@@ -483,7 +561,7 @@
               (when (string-equal "tsx" (file-name-extension buffer-file-name))
 		            (setup-tide-mode))))
   ;; enable typescript-tslint checker
-  ;;(flycheck-add-mode 'typescript-tslint 'web-mode)
+  (flycheck-add-mode 'typescript-tslint 'web-mode)
   )
 
 (use-package typescript-mode
@@ -747,7 +825,7 @@ the end of the line for hidden regions."
  '(minimap-window-location 'right)
  '(neo-theme 'nerd)
  '(package-selected-packages
-   '(highlight-defined sublime-themes green-is-the-new-black-theme green-phosphor-theme theme-magic wakatime-mode minimap blamer a quelpa-use-package quelpa indent-guide mysql-to-org flycheck-posframe magit spaceline json-mode dap-mode typescript-mode company google-translate js-import projectile try helm-lsp web-beautify fix-word switch-window ac-php dotenv-mode lsp-treemacs yasnippet-snippets lsp-mode helm-xref auto-rename-tag winum multiple-cursors neotree emmet-mode evil-nerd-commenter undo-tree all-the-icons which-key evil rainbow-delimiters ace-jump-mode ace-jump quick-peek flycheck-inline flycheck smex helm anzu smartparens kaolin-themes use-package))
+   '(doom-modeline highlight-defined sublime-themes green-is-the-new-black-theme green-phosphor-theme theme-magic wakatime-mode minimap blamer a quelpa-use-package quelpa indent-guide mysql-to-org flycheck-posframe magit spaceline json-mode dap-mode typescript-mode company google-translate js-import projectile try helm-lsp web-beautify fix-word switch-window ac-php dotenv-mode lsp-treemacs yasnippet-snippets lsp-mode helm-xref auto-rename-tag winum multiple-cursors neotree emmet-mode evil-nerd-commenter undo-tree all-the-icons which-key evil rainbow-delimiters ace-jump-mode ace-jump quick-peek flycheck-inline flycheck smex helm anzu smartparens kaolin-themes use-package))
  '(paradox-github-token t)
  '(show-paren-mode t)
  '(tool-bar-mode nil)
@@ -758,7 +836,7 @@ the end of the line for hidden regions."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:background nil :family "Source Code Pro" :foundry "ADBO" :slant normal :weight normal :height 113 :width normal))))
+ '(default ((t (:background nil :family "Fira Code" :foundry "CTDB" :slant normal :weight normal :height 105 :width normal))))
  '(blamer-face ((t :foreground "#7a88cf" :background nil :height 98 :italic t)))
  '(minimap-active-region-background ((t (:extend t :background "#252525"))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "dark orange"))))
