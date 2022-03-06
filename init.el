@@ -53,7 +53,7 @@
 (setq doom-modeline-workspace-name t)
 ;; How tall the mode-line should be. It's only respected in GUI.
 ;; If the actual char height is larger, it respects the actual height.
-(setq doom-modeline-height 30)
+(setq doom-modeline-height 35)
 ;; Whether display the perspective name. Non-nil to display in the mode-line.
 (setq doom-modeline-persp-name t)
 ;; If non nil the default perspective name is displayed in the mode-line.
@@ -111,7 +111,6 @@
 (defun setup-custom-doom-modeline ()
   (doom-modeline-set-modeline 'my-simple-line 'default))
 (add-hook 'doom-modeline-mode-hook 'setup-custom-doom-modeline)
-(setq doom-modeline-height 1)
 (set-face-attribute 'mode-line nil :family "Fira Code" :height 100)
 (set-face-attribute 'mode-line-inactive nil :family "Fira Code" :height 100)
 (setq doom-modeline-project-detection 'project)
@@ -120,13 +119,23 @@
       (lambda ()
         (add-to-list 'mode-line-process '(:eval (nth ess--busy-count ess-busy-strings)))))
 
+(use-package doom-themes
+  :ensure t
+  :config
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  (load-theme 'kaolin-dark t) ;; Defafult doom-one
 
-
-(setq-default indicate-empty-lines t)
-(define-fringe-bitmap 'tilde [0 0 0 113 219 142 0 0] nil nil 'center)
-(setcdr (assq 'empty-line fringe-indicator-alist) 'tilde)
-(set-fringe-bitmap-face 'tilde 'font-lock-function-name-face)
-(setq-default indincate-empty-lines t)
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+  ;; Enable custom neotree theme (all-the-icons must be installed!)
+  (doom-themes-neotree-config)
+  ;; or for treemacs users
+  (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
+  (doom-themes-treemacs-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
 
 (when(<= emacs-major-version 26)
   (setq-default
@@ -222,19 +231,20 @@
   (blamer-min-offset 70)
   :custom-face
   (blamer-face ((t :foreground "#7a88cf"
+                   :family "consolas"
                    :background nil
-                   :height 98
+                   :height 120
                    :italic t)))
   :config
   (global-blamer-mode 1))
 
 ;;Theme
-(use-package kaolin-themes
-  :ensure t
-  :config (load-theme 'kaolin-dark t))
+;; (use-package kaolin-themes
+;;   :ensure t
+;;   :config (load-theme 'kaolin-dark t))
 
-(use-package spaceline
-  :ensure t)
+;; (use-package spaceline
+;;   :ensure t)
 
 (use-package magit
   :ensure t)
@@ -816,8 +826,7 @@ the end of the line for hidden regions."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("28eb6d962d45df4b2cf8d861a4b5610e5dece44972e61d0604c44c4aad1e8a9d" "3c7a784b90f7abebb213869a21e84da462c26a1fda7e5bd0ffebf6ba12dbd041" default))
+ '(custom-safe-themes '(default))
  '(highlight-indent-guides-method 'character)
  '(minimap-minimum-width 20)
  '(minimap-mode nil)
@@ -825,7 +834,7 @@ the end of the line for hidden regions."
  '(minimap-window-location 'right)
  '(neo-theme 'nerd)
  '(package-selected-packages
-   '(doom-modeline highlight-defined sublime-themes green-is-the-new-black-theme green-phosphor-theme theme-magic wakatime-mode minimap blamer a quelpa-use-package quelpa indent-guide mysql-to-org flycheck-posframe magit spaceline json-mode dap-mode typescript-mode company google-translate js-import projectile try helm-lsp web-beautify fix-word switch-window ac-php dotenv-mode lsp-treemacs yasnippet-snippets lsp-mode helm-xref auto-rename-tag winum multiple-cursors neotree emmet-mode evil-nerd-commenter undo-tree all-the-icons which-key evil rainbow-delimiters ace-jump-mode ace-jump quick-peek flycheck-inline flycheck smex helm anzu smartparens kaolin-themes use-package))
+   '(doom-themes doom-modeline highlight-defined sublime-themes green-is-the-new-black-theme green-phosphor-theme theme-magic wakatime-mode minimap blamer a quelpa-use-package quelpa indent-guide mysql-to-org flycheck-posframe magit spaceline json-mode dap-mode typescript-mode company google-translate js-import projectile try helm-lsp web-beautify fix-word switch-window ac-php dotenv-mode lsp-treemacs yasnippet-snippets lsp-mode helm-xref auto-rename-tag winum multiple-cursors neotree emmet-mode evil-nerd-commenter undo-tree all-the-icons which-key evil rainbow-delimiters ace-jump-mode ace-jump quick-peek flycheck-inline flycheck smex helm anzu smartparens kaolin-themes use-package))
  '(paradox-github-token t)
  '(show-paren-mode t)
  '(tool-bar-mode nil)
@@ -836,8 +845,8 @@ the end of the line for hidden regions."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:background nil :family "Fira Code" :foundry "CTDB" :slant normal :weight normal :height 105 :width normal))))
- '(blamer-face ((t :foreground "#7a88cf" :background nil :height 98 :italic t)))
+ '(default ((t (:inherit nil :extend nil :stipple nil :background "#282c34" :foreground "#bbc2cf" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 118 :width normal :foundry "CTDB" :family "Fira Code"))))
+ '(blamer-face ((t :foreground "#7a88cf" :background nil :height 105 :italic t)))
  '(minimap-active-region-background ((t (:extend t :background "#252525"))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "dark orange"))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "deep pink"))))
