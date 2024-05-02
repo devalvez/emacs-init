@@ -7,8 +7,27 @@
 (tool-bar-mode 0)
 (scroll-bar-mode 0)
 
-;; (set-default-coding-systems '(utf-8))
-;; (prefer-coding-system 'utf-8)
+;; Emacs background color and line-number custom.
+(set-face-background 'default "#0A0709")
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:family "JetBrains Mono" :foundry "JB" :slant normal :weight regular :height 143 :width normal))))
+ '(doom-modeline ((t (:background "#0A0709"))))
+ '(fill-column-indicator ((t (:foreground "#161519"))))
+ '(highlight-indent-guides-character-face ((t (:foreground "#283747"))))
+ '(highlight-indent-guides-odd-face ((t (:background "#283747"))))
+ '(highlight-indent-guides-stack-character-face ((t (:foreground "#283747"))))
+ '(highlight-indent-guides-stack-even-face ((t (:background "#283747"))))
+ '(highlight-indent-guides-stack-odd-face ((t (:background "#283747"))))
+ '(highlight-indent-guides-top-character-face ((t (:foreground "#283747"))))
+ '(line-number ((t (:background "#0A0709")))))
+
+;;======================================================
+
+(prefer-coding-system 'utf-8)
 
 (setq auto-save-default nil)
 (setq backup-inhibited t)
@@ -16,7 +35,7 @@
 (global-hl-line-mode)
 (global-display-line-numbers-mode)
 (setq-default cursor-type 'box)
-;; (setq-default cursor-type '(bar . 1))
+;; (setq-default cursor-type '(bar . 2))
 
 (setq visible-bell t)
 (setq ring-bell-function 'ignore)
@@ -26,8 +45,8 @@
 
 (setq-default indicate-empty-lines t)
 (define-fringe-bitmap 'tilde [0 0 0 113 219 142 0 0] nil nil 'center)
-(setcdr (assq 'empty-line fringe-indicator-alist) 'tilde)
-(set-fringe-bitmap-face 'tilde 'font-lock-function-name-face)
+;; (setcdr (assq 'empty-line fringe-indicator-alist) 'tilde)
+;; (set-fringe-bitmap-face 'tilde 'font-lock-function-name-face)
 
 
 ;; Find files FFAP custom function
@@ -78,9 +97,17 @@ If OPEN-ANOTHER-WINDOW is not nil, the file will be opened in new window."
   (package-refresh-contents)
   (package-install 'use-package))
 
-(use-package kaolin-themes
-  :ensure t
-  :config (load-theme 'kaolin-aurora t))
+;; (use-package kaolin-themes
+;;   :ensure t
+;;   :config (load-theme 'kaolin-aurora t))
+
+;; (use-package gruvbox-theme
+;;   :ensure t
+;;   :config (load-theme 'gruvbox-dark-hard t))
+
+;; (use-package catppuccin-theme
+;;   :ensure t
+;;   :config (load-theme 'catppuccin t))
 
 (use-package highlight-numbers
   :ensure t
@@ -102,34 +129,32 @@ If OPEN-ANOTHER-WINDOW is not nil, the file will be opened in new window."
   :ensure t
   :init (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
-(use-package smex
-  :ensure t
-  :init (smex-initialize)
-  :bind (("M-x" . 'smex)))
+;; (use-package smex
+;;   :ensure t
+;;   :init (smex-initialize)
+;;   :bind (("M-x" . 'smex)))
 
-(use-package ido-vertical-mode
-  :ensure t
-  :config
-  (progn
-    (ido-mode 1)
-    (setq ido-vertical-show-count t)))
+;; (use-package ido-vertical-mode
+;;   :ensure t
+;;   :config
+;;   (progn
+;;     (ido-vertical-mode 1)
+;;     (setq ido-vertical-show-count t)))
 
-(use-package anzu
-  :ensure t
-  :config (anzu-mode 1))
+;; (use-package anzu
+;;   :ensure t
+;;   :config (anzu-mode 1))
 
-(use-package helm
-  :ensure t
-  :config (helm-mode 1))
+;; (use-package helm
+;;   :ensure t
+;;   :config (helm-mode 1))
 
-(use-package helm-xref
-  :ensure t
-  :config
-  (define-key global-map [remap find-file] #'helm-find-files)
-  (define-key global-map [remap execute-extended-command] #'helm-M-x)
-  (define-key global-map [remap switch-to-buffer] #'helm-mini))
-
-
+;; (use-package helm-xref
+;;   :ensure t
+;;   :config
+;;   (define-key global-map [remap find-file] #'helm-find-files)
+;;   (define-key global-map [remap execute-extended-command] #'helm-M-x)
+;;   (define-key global-map [remap switch-to-buffer] #'helm-mini))
 
 (use-package eglot
   :ensure t)
@@ -180,14 +205,15 @@ If OPEN-ANOTHER-WINDOW is not nil, the file will be opened in new window."
   :config
   (progn
     (which-key-mode)
-    (which-key-setup-side-window-right-bottom)))
+    ;; (which-key-setup-side-window-right-bottom)
+    (which-key-setup-minibuffer)))
 
 (use-package undo-tree
   :ensure t
   :config (global-undo-tree-mode 1)
   :bind (
          ("C-z" . 'undo)
-         ("C-S-z" . 'red)))
+         ("C-S-z" . 'redo)))
 
 (defun my-undo-tree-config ()
   (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
@@ -220,7 +246,7 @@ If OPEN-ANOTHER-WINDOW is not nil, the file will be opened in new window."
 
 (use-package beacon
   :ensure t
-  :config (beacon-mode 0))
+  :config (beacon-mode 1))
 
 (use-package minimap
   :ensure t
@@ -256,11 +282,9 @@ If OPEN-ANOTHER-WINDOW is not nil, the file will be opened in new window."
   :ensure t
   :config (add-hook 'foo-mode-hook #'rainbow-delimiters-mode))
 
-
 (use-package wakatime-mode
   :ensure t
   :config (global-wakatime-mode))
-
 
 (defun g-screenshot-on-buffer-creation ()
   (setq display-fill-column-indicator-column nil)
@@ -290,12 +314,18 @@ If OPEN-ANOTHER-WINDOW is not nil, the file will be opened in new window."
 
   :hook((screenshot-buffer-creation-hook . g-screenshot-on-buffer-creation)))
 
+;; Straight package management
+(load-file "~/.emacs.d/plugins-settings/straight.el")
+
+;; Dired custom
+(load-file "~/.emacs.d/plugins-settings/dired-config.el")
 
 ;; GitBlame Config
 (load-file "~/.emacs.d/plugins-settings/quelpa-packages.el")
 
 ;; Dashboard Config
 (load-file "~/.emacs.d/plugins-settings/dashboard-settigs.el")
+
 
 ;; IDEs settings
 (load-file "~/.emacs.d/plugins-settings/ides-settings.el")
@@ -304,10 +334,13 @@ If OPEN-ANOTHER-WINDOW is not nil, the file will be opened in new window."
 (load-file "~/.emacs.d/plugins-settings/hideshowvis.el")
 
 ;; Spaceline Buffer Bar
-(load-file "~/.emacs.d/plugins-settings/spaceline-bar.el")
+;; (load-file "~/.emacs.d/plugins-settings/spaceline-bar.el")
 
 ;; Doom modeline
-;; (load-file "~/.emacs.d/plugins-settings/doom-bar.el")
+(load-file "~/.emacs.d/plugins-settings/doom-modeline-manual.el")
+
+;; Centaur Tabs
+;; (load-file "~/.emacs.d/plugins-settings/centaur-tabs.el")
 
 ;; Curtom function
 (load-file "~/.emacs.d/plugins-settings/custom-function.el")
@@ -319,27 +352,19 @@ If OPEN-ANOTHER-WINDOW is not nil, the file will be opened in new window."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("d77d6ba33442dd3121b44e20af28f1fae8eeda413b2c3d3b9f1315fbda021992" default))
  '(global-display-line-numbers-mode t)
- '(highlight-indent-guides-method 'fill)
- '(neo-autorefresh t)
+ '(highlight-indent-guides-method 'character)
+ '(neo-autorefresh nil)
  '(neo-theme 'nerd)
- '(neo-window-width 35)
+ '(neo-window-width 25)
  '(package-selected-packages
-   '(0blayout mu4e-alert doom-modeline nerd-icons flycheck-aspell js-import reformatter react-snippets company-web jtsx-jsx-mode yasnippet-snippets winum which-key web-mode wakatime-mode undo-tree try tide switch-window spaceline-all-the-icons smex smartparens rainbow-mode rainbow-delimiters quelpa-use-package nlinum neotree multiple-cursors minimap llm kaolin-themes jest-test-mode jest ido-vertical-mode highlight-numbers highlight-indent-guides highlight-defined helm-xref helm-lsp google-translate flycheck-posframe fix-word emmet-mode dotenv-mode dashboard dap-mode company-quickhelp blamer beacon auto-complete apheleia anzu))
+   '(embark-consult orderless embark consult marginalia vertico gruvbox-theme all-the-icons-nerd-fonts soothe-theme soothe-them catppuccin-theme 0blayout mu4e-alert doom-modeline nerd-icons flycheck-aspell js-import reformatter react-snippets company-web jtsx-jsx-mode yasnippet-snippets winum which-key web-mode wakatime-mode undo-tree try tide switch-window spaceline-all-the-icons smex smartparens rainbow-mode rainbow-delimiters quelpa-use-package nlinum neotree multiple-cursors minimap llm kaolin-themes jest-test-mode jest ido-vertical-mode highlight-numbers highlight-indent-guides highlight-defined helm-xref helm-lsp google-translate flycheck-posframe fix-word emmet-mode dotenv-mode dashboard dap-mode company-quickhelp blamer beacon auto-complete apheleia anzu))
  '(set-face-background 'highlight-indent-guides-even-face t)
  '(set-face-foreground 'highlight-indent-guides-character-face t)
  '(spaceline-all-the-icons-hide-long-buffer-path t)
  '(spaceline-all-the-icons-highlight-file-name t)
+ '(spaceline-all-the-icons-separator-type 'slant)
  '(tool-bar-mode nil))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:family "Cascadia Code PL" :foundry "SAJA" :slant normal :weight regular :height 113 :width normal))))
- '(highlight-indent-guides-character-face ((t (:foreground "#272729"))))
- '(highlight-indent-guides-odd-face ((t (:background "#272729"))))
- '(highlight-indent-guides-stack-character-face ((t (:foreground "#272729"))))
- '(highlight-indent-guides-stack-even-face ((t (:background "#272729"))))
- '(highlight-indent-guides-stack-odd-face ((t (:background "#404040"))))
- '(highlight-indent-guides-top-character-face ((t (:foreground "#272729")))))
+

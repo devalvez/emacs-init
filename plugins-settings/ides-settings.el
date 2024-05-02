@@ -1,3 +1,6 @@
+(add-to-list 'load-path "~/.emacs./plugins/react-snippets.el")
+(require 'react-snippets)
+
 (use-package reformatter
   :ensure t)
 
@@ -70,3 +73,12 @@
           (lambda ()
             (flycheck-mode t)
             (tern-mode t)))
+
+
+
+(use-package lsp-tailwindcss
+  :ensure t
+  :init
+  (setq lsp-tailwindcss-add-on-mode t)
+  :config
+  (setq lsp-tailwindcss-major-modes '(web-mode html-mode sgml-mode css-mode rjsx-mode)))

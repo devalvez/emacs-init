@@ -77,7 +77,7 @@
 (defvar hideshowvis-mode-map
   (let ((hideshowvis-mode-map (make-sparse-keymap)))
     (define-key hideshowvis-mode-map [left-fringe mouse-1]
-		'hideshowvis-click-fringe)
+		            'hideshowvis-click-fringe)
     hideshowvis-mode-map)
   "Keymap for hideshowvis mode")
 
