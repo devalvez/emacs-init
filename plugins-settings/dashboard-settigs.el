@@ -11,15 +11,24 @@
   :config
   (dashboard-setup-startup-hook)
   (setq dashboard-center-content t)
-  (setq dashboard-banner-logo-title "Welcome to Emacs Devalvez")
-  (setq dashboard-startup-banner "~/.emacs.d/thumb.png")
-  (setq dashboard-footer-icon (all-the-icons-octicon "flame"
-                                                     :height 0.3
-                                                     :v-adjust 2
+  (setq dashboard-vertically-center-content t)
+  ;;(setq dashboard-show-shortcuts nil)
+  (setq dashboard-banner-logo-title "Welcome to Emacs DEVALVEZ")
+  (setq dashboard-startup-banner "~/.emacs.d/astronaut.png")
+
+  (setq dashboard-display-icons-p t)     ; display icons on both GUI and terminal
+  (setq dashboard-icon-type 'nerd-icons) ; use `nerd-icons' package
+
+  (setq dashboard-footer-icon (all-the-icons-octicon "dashboard"
+                                                     :height 1.5
+                                                     :v-adjust 0
                                                      :face 'font-lock-keyword-face))
 
-  (setq dashboard-items '((recents  . 5)
-                          (projects . 5)))
+  (setq dashboard-items '((recents   . 10)
+                          (bookmarks . 5)
+                          (projects  . 5)
+                          (agenda    . 5)
+                          (registers . 5)))
   (setq dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name)
   (defun dashboard-insert-custom (list-size)
     (insert "The End"))
@@ -39,9 +48,33 @@
             "gitlab.com/WesleyAntonioAlves"
             (lambda (&rest _) (browse-url "https://gitlab.com/WesleyAntonioAlves")))
 
-           (,(all-the-icons-faicon "hand-spock-o" :height 1.1 :v-adjust 0.0)
+           (,(all-the-icons-faicon "rebel" :height 1.1 :v-adjust 0.0)
             "Devalvez Blog"
-            "devalvez.online"
-            (lambda (&rest _) (browse-url "https://devalvez.online")))
+            "https://devalvez.com"
+            (lambda (&rest _) (browse-url "https://devalvez.com")))
 
-           ))))
+           )))
+  
+  (setq dashboard-startupify-list '(dashboard-insert-banner
+                                    dashboard-insert-newline
+                                    dashboard-insert-banner-title
+                                    dashboard-insert-newline
+                                    dashboard-insert-navigator
+                                    dashboard-insert-newline
+                                    dashboard-insert-init-info
+                                    dashboard-insert-items
+                                    dashboard-insert-newline
+                                    dashboard-insert-footer))
+  (setq dashboard-navigation-cycle t)
+  (setq dashboard-heading-shorcut-format " [%s]")
+  (setq dashboard-item-shortcuts '((recents   . "r")
+                                   (bookmarks . "m")
+                                   (projects . "p")
+                                   (agenda    . "a")
+                                   (registers . "e")))
+  (setq dashboard-item-names '(("Recent Files:"               . "Arquivos recentes:")
+                               ("Agenda for today:"           . "Agenda de hoje:")
+                               ("Agenda for the coming week:" . "Agenda:")))
+  (setq dashboard-icon-type 'all-the-icons) )
+(setq dashboard-set-footer nil)
+
