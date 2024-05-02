@@ -4,6 +4,10 @@
 ### Configuration set based on Emacs 29.3
 
 
+<p align="center" style="width: 100%">
+  <img src="./astronaut.png" alt="thumb.png" align="center" />
+</p>
+
 Pre-defined configuration to work with WEB development with:
 - PHP
 - NodeJS
@@ -14,7 +18,3 @@ Pre-defined configuration to work with WEB development with:
 - CSS.
 
 The present configurations were made by personal preference, none of the popular bases for emacs were used, such as: Spacemacs, Doom Emacs, etc. But it contains packages that make up the mentioned configurations.
-
-<p style="text-align: center">
-  <img src="./astronaut.png" alt="thumb.png" align="center" />
-</p>
