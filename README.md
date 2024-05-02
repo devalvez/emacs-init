@@ -1,4 +1,4 @@
-<img src="./thumb.png" alt="thumb.png" align="right" width="200px" />
+<img src="./keyboard.png" alt="thumb.png" align="right" width="200px" />
 
 # Emacs Config (init.el)
 ### Configuration set based on Emacs 29.3
