@@ -1,8 +1,19 @@
-(add-to-list 'load-path "~/.emacs./plugins/react-snippets.el")
-(require 'react-snippets)
-
 (use-package reformatter
   :ensure t)
+
+(use-package go-mode
+  :ensure t)
+
+(require 'lsp-mode)
+(add-hook 'go-mode-hook #'lsp-deferred)
+
+;; Set up before-save hooks to format buffer and add/delete imports.
+;; Make sure you don't have other gofmt/goimports hooks enabled.
+(defun lsp-go-install-save-hooks ()
+  (add-hook 'before-save-hook #'lsp-format-buffer t t)
+  (add-hook 'before-save-hook #'lsp-organize-imports t t))
+(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+
 
 (use-package js-import
   :ensure t)
@@ -16,6 +27,9 @@
 (use-package auto-rename-tag
   :ensure t)
 
+(use-package css-mode
+  :ensure t)
+
 (use-package emmet-mode
   :ensure t
   :config
@@ -26,7 +40,8 @@
   (add-hook 'emmet-mode-hook (lambda () (setq emmet-indent-after-insert nil))))
 
 (use-package yasnippet-snippets
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (defun tidy-buffer ()
   "Run Tidy HTML parser on current buffer."
@@ -63,6 +78,8 @@
 ;; Prisma ORM Syntax
 (add-to-list 'load-path "~/.emacs.d/plugins/prisma-mode")
 (autoload 'prisma-mode "prisma-mode" nil t)
+(setq lsp-language-id-configuration '((prisma-mode . "prisma")))
+(add-to-list 'auto-mode-alist '("\\.prisma\\'". prisma-mode))
 (setq prisma-format-on-save t)
 
 (setq lsp-eslint-enable t)
@@ -73,8 +90,6 @@
           (lambda ()
             (flycheck-mode t)
             (tern-mode t)))
-
-
 
 (use-package lsp-tailwindcss
   :ensure t

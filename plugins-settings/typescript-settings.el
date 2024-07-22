@@ -18,15 +18,6 @@
 (add-hook 'typescript-mode-hook #'lsp)
 (add-hook 'typescript-tsx-mode-hook #'lsp)
 
-;; Configuração adicional para TypeScript
-(use-package typescript-mode
-  :ensure t
-  :config
-  (setq typescript-indent-level 2))
-
-;; Usar tsx-ts-mode para arquivos .tsx
-(add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
-
 (setq package-selected-packages '(lsp-mode yasnippet lsp-treemacs helm-lsp projectile hydra flycheck company avy which-key helm-xref dap-mode json-mode))
 (when (cl-find-if-not #'package-installed-p package-selected-packages)
   (package-refresh-contents)
@@ -49,12 +40,25 @@
   (yas-global-mode))
 
 ;; Configuração do Tree-sitter para TypeScript e React
+;; (use-package typescript-mode
+;;   :after tree-sitter
+;;   :config
+;;   (define-derived-mode typescriptreact-mode typescript-mode "TypeScript TSX")
+;;   (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescriptreact-mode))
+;;   (add-to-list 'tree-sitter-major-mode-language-alist '(typescriptreact-mode . tsx)))
+
+;; Configuração adicional para TypeScript
 (use-package typescript-mode
   :after tree-sitter
   :config
+  (setq typescript-indent-level 2)
   (define-derived-mode typescriptreact-mode typescript-mode "TypeScript TSX")
   (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescriptreact-mode))
   (add-to-list 'tree-sitter-major-mode-language-alist '(typescriptreact-mode . tsx)))
+
+;; Usar tsx-ts-mode para arquivos .tsx
+(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
+;;(add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
 
 (use-package tide
   :ensure t
@@ -100,7 +104,6 @@
   
   (with-eval-after-load 'flycheck
     (flycheck-add-mode 'javascript-eslint 'typescript-mode))
-  (setq-default tab-width 2)
   (web-mode-use-tabs)
   (add-hook 'web-mode-hook 'emmet-mode)
   (add-hook 'web-mode-hook (lambda ()

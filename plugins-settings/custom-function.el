@@ -44,12 +44,6 @@
 (global-set-key [\M-up] 'move-text-up)
 (global-set-key [\M-down] 'move-text-down)
 
-(setq-default indent-tabs-mode nil)
-(setq-default tab-width 2)
-(setq indent-line-function 'insert-tab)
-
-
-
 (defun duplicate-line()
   (interactive)
   (move-beginning-of-line 1)
@@ -94,10 +88,6 @@
   (move-text-internal (- arg)))
 (global-set-key [\M-up] 'move-text-up)
 (global-set-key [\M-down] 'move-text-down)
-
-(setq-default indent-tabs-mode nil)
-(setq-default tab-width 2)
-(setq indent-line-function 'insert-tab)
 
 (require 'helm-xref)
 (define-key global-map [remap find-file] #'helm-find-files)

@@ -5,6 +5,12 @@
 smex-items
 recentf
 tramp
+hystory
 ido.last
 network-security.data
 ~*
+.cache
+.extension
+.lsp-*
+.mc-*
+.dap-*
