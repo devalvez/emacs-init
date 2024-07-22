@@ -12,8 +12,8 @@
   (dashboard-setup-startup-hook)
   (setq dashboard-center-content t)
   (setq dashboard-vertically-center-content t)
-  ;;(setq dashboard-show-shortcuts nil)
-  (setq dashboard-banner-logo-title "Welcome to Emacs DEVALVEZ")
+  (setq dashboard-show-shortcuts t)
+  (setq dashboard-banner-logo-title "·• E M A C S  ✦  D E V A L V E Z •·")
   (setq dashboard-startup-banner "~/.emacs.d/astronaut.png")
 
   (setq dashboard-display-icons-p t)     ; display icons on both GUI and terminal
@@ -24,11 +24,6 @@
                                                      :v-adjust 0
                                                      :face 'font-lock-keyword-face))
 
-  (setq dashboard-items '((recents   . 10)
-                          (bookmarks . 5)
-                          (projects  . 5)
-                          (agenda    . 5)
-                          (registers . 5)))
   (setq dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name)
   (defun dashboard-insert-custom (list-size)
     (insert "The End"))
@@ -54,6 +49,12 @@
             (lambda (&rest _) (browse-url "https://devalvez.com")))
 
            )))
+
+  (setq dashboard-items '((recents   . 10)
+                          (bookmarks . 5)
+                          (projects  . 5)
+                          (agenda    . 5)
+                          (registers . 5)))
   
   (setq dashboard-startupify-list '(dashboard-insert-banner
                                     dashboard-insert-newline
@@ -72,9 +73,9 @@
                                    (projects . "p")
                                    (agenda    . "a")
                                    (registers . "e")))
-  (setq dashboard-item-names '(("Recent Files:"               . "Arquivos recentes:")
-                               ("Agenda for today:"           . "Agenda de hoje:")
-                               ("Agenda for the coming week:" . "Agenda:")))
+  (setq dashboard-item-names '(("Recent Files:"               . "Recent files:")
+                               ("Agenda for today:"           . "Agenda for today:")
+                               ("Agenda for the coming week:" . "Agenda for the coming week:")))
   (setq dashboard-icon-type 'all-the-icons) )
 (setq dashboard-set-footer nil)
 

@@ -2,28 +2,39 @@
 
 ;;; Commentary:
 
-;;; Code:
+;;; code:
+
+(xterm-mouse-mode 1)
+
 (menu-bar-mode 0)
 (tool-bar-mode 0)
 (scroll-bar-mode 0)
 
-;; Emacs background color and line-number custom.
-(set-face-background 'default "#0A0709")
+;; Indentation settings
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 2)
+(setq-default c-basic-offset 2)
+(setq-default python-indent-offset 2)
+(setq indent-line-function 'insert-tab)
+
+;; Emacs background color.
+;; (set-face-background 'default "#001734")
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "JetBrains Mono" :foundry "JB" :slant normal :weight regular :height 143 :width normal))))
- '(doom-modeline ((t (:background "#0A0709"))))
- '(fill-column-indicator ((t (:foreground "#161519"))))
- '(highlight-indent-guides-character-face ((t (:foreground "#283747"))))
- '(highlight-indent-guides-odd-face ((t (:background "#283747"))))
- '(highlight-indent-guides-stack-character-face ((t (:foreground "#283747"))))
- '(highlight-indent-guides-stack-even-face ((t (:background "#283747"))))
- '(highlight-indent-guides-stack-odd-face ((t (:background "#283747"))))
- '(highlight-indent-guides-top-character-face ((t (:foreground "#283747"))))
- '(line-number ((t (:background "#0A0709")))))
+ '(default ((t (:family "JetBrains Mono" :foundry "JB" :slant normal :weight regular :height 120 :width normal))))
+ '(rainbow-delimiters-depth-1-face ((t (:foreground "dark orange"))))
+ '(rainbow-delimiters-depth-2-face ((t (:foreground "deep pink"))))
+ '(rainbow-delimiters-depth-3-face ((t (:foreground "chartreuse"))))
+ '(rainbow-delimiters-depth-4-face ((t (:foreground "deep sky blue"))))
+ '(rainbow-delimiters-depth-5-face ((t (:foreground "yellow"))))
+ '(rainbow-delimiters-depth-6-face ((t (:foreground "orchid"))))
+ '(rainbow-delimiters-depth-7-face ((t (:foreground "spring green"))))
+ '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1")))))
+
 
 ;;======================================================
 
@@ -34,8 +45,8 @@
 (setq-default truncate-lines t)
 (global-hl-line-mode)
 (global-display-line-numbers-mode)
-(setq-default cursor-type 'box)
-;; (setq-default cursor-type '(bar . 2))
+;; (setq-default cursor-type 'box)
+(setq-default cursor-type '(bar . 2))
 
 (setq visible-bell t)
 (setq ring-bell-function 'ignore)
@@ -82,6 +93,13 @@ If OPEN-ANOTHER-WINDOW is not nil, the file will be opened in new window."
 
 (package-initialize)
 
+(when (not (package-installed-p 'use-package))
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+;; Straight package management
+(load-file "~/.emacs.d/plugins-settings/straight.el")
+
 (use-package flycheck-aspell
   :ensure t
   :config
@@ -89,25 +107,13 @@ If OPEN-ANOTHER-WINDOW is not nil, the file will be opened in new window."
   (setq ispell-program-name "aspell")
   (setq ispell-silently-savep t))
 
+;; (use-package kaolin-themes
+;;   :ensure t
+;;   :config (load-theme 'kaolin-dark t))
+
 (use-package flycheck
   :ensure t
   :init (global-flycheck-mode))
-
-(when (not (package-installed-p 'use-package))
-  (package-refresh-contents)
-  (package-install 'use-package))
-
-;; (use-package kaolin-themes
-;;   :ensure t
-;;   :config (load-theme 'kaolin-aurora t))
-
-;; (use-package gruvbox-theme
-;;   :ensure t
-;;   :config (load-theme 'gruvbox-dark-hard t))
-
-;; (use-package catppuccin-theme
-;;   :ensure t
-;;   :config (load-theme 'catppuccin t))
 
 (use-package highlight-numbers
   :ensure t
@@ -121,6 +127,34 @@ If OPEN-ANOTHER-WINDOW is not nil, the file will be opened in new window."
 (use-package avy
   :ensure t)
 
+(use-package tree-sitter
+  :ensure t)
+
+(use-package tree-sitter-langs
+  :ensure t
+  :config
+  (require 'tree-sitter-langs)
+  (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-mode. tree-sitter-typescript)))
+
+(use-package indent-bars
+  :straight (indent-bars :type git :host github :repo "jdtsmith/indent-bars")
+  :hook (
+         (tsx-ts-mode typescript-mode js-mode js2-mode emacs-lisp-mode web-mode). indent-bars-mode)
+  :config
+  (setq indent-bars-depth-update-delay 0.2)
+  (setq indent-bars-no-descend-string t)
+  (setq indent-bars-no-descend-list t)
+  (setq indent-bars-no-stipple-char-font-weight nil)
+  (defun my/tab-bar-mode-setup ()
+    (setq tab-bar-colors
+          '(("active". "#73C6B6")
+            ("inactive". "#212F3D")))
+    (tab-bar-mode 1))
+  
+  (add-hook 'tab-bar-mode-hook #'my/tab-bar-mode-setup))
+
+
+
 (use-package smartparens
   :ensure t
   :config (smartparens-global-mode 1))
@@ -129,32 +163,12 @@ If OPEN-ANOTHER-WINDOW is not nil, the file will be opened in new window."
   :ensure t
   :init (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
-;; (use-package smex
-;;   :ensure t
-;;   :init (smex-initialize)
-;;   :bind (("M-x" . 'smex)))
-
-;; (use-package ido-vertical-mode
-;;   :ensure t
-;;   :config
-;;   (progn
-;;     (ido-vertical-mode 1)
-;;     (setq ido-vertical-show-count t)))
-
-;; (use-package anzu
-;;   :ensure t
-;;   :config (anzu-mode 1))
-
-;; (use-package helm
-;;   :ensure t
-;;   :config (helm-mode 1))
-
-;; (use-package helm-xref
-;;   :ensure t
-;;   :config
-;;   (define-key global-map [remap find-file] #'helm-find-files)
-;;   (define-key global-map [remap execute-extended-command] #'helm-M-x)
-;;   (define-key global-map [remap switch-to-buffer] #'helm-mini))
+(use-package helm-xref
+  :ensure t
+  :config
+  (define-key global-map [remap find-file] #'helm-find-files)
+  (define-key global-map [remap execute-extended-command] #'helm-M-x)
+  (define-key global-map [remap switch-to-buffer] #'helm-mini))
 
 (use-package eglot
   :ensure t)
@@ -179,6 +193,16 @@ If OPEN-ANOTHER-WINDOW is not nil, the file will be opened in new window."
   (setq company-quickhelp-idle-delay 0.1)
   (company-quickhelp-mode 1))
 
+
+(use-package posframe
+  :ensure t)
+
+;; (use-package browse-at-remote
+;;   :ensure t)
+
+(add-to-list 'load-path "~/.emacs.d/plugins/posframe")
+(require 'posframe)
+
 (use-package pos-tip
   :ensure t)
 
@@ -199,6 +223,32 @@ If OPEN-ANOTHER-WINDOW is not nil, the file will be opened in new window."
   (set-face-attribute 'flycheck-posframe-error-face nil :inherit 'error)
   (setq flycheck-posframe-warning-prefix "\u26a0 ")
   (setq flycheck-posframe-border-width 10))
+
+(use-package selectrum
+  :ensure t
+  :config
+  (selectrum-mode 1))
+
+(use-package projectile
+  :ensure t
+  :config (projectile-mode 1)
+  (setq projectile-sort-order 'recentf)
+  (setq projectile-enable-caching t)
+  (define-key projectile-mode-map (kbd "C-c C-p") 'projectile-command-map)
+  (setq projectile-project-search-path '("~/Documents/projects/works/" "~/Documents/projects/personal/" ("~/works" . 1))))
+
+(use-package org-projectile
+  :ensure t)
+
+(use-package org-project-capture
+  :bind (("C-c n p" . org-project-capture-project-todo-completing-read))
+  :ensure t
+  :config
+  (progn
+    (setq org-project-capture-backend
+          (make-instance 'org-project-capture-projectile-backend))  ; Replace with your backend of choice
+    (setq org-project-capture-projects-file "~/.emacs.d/org/projects.org")
+    (org-project-capture-single-file)))
 
 (use-package which-key
   :ensure t
@@ -246,22 +296,25 @@ If OPEN-ANOTHER-WINDOW is not nil, the file will be opened in new window."
 
 (use-package beacon
   :ensure t
-  :config (beacon-mode 1))
+  :config (beacon-mode -1))
 
 (use-package minimap
   :ensure t
   :config (minimap-mode 0))
 
-(use-package highlight-indent-guides
-  :ensure t
-  :config
-  (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
-  (set-face-background 'highlight-indent-guides-odd-face "#252527")
-  (set-face-background 'highlight-indent-guides-even-face "#252527")
-  (set-face-foreground 'highlight-indent-guides-character-face "#252527"))
-
 (use-package hydra
   :ensure t)
+
+(use-package file-info
+  :straight (:host github :repo "artawower/file-info.el")
+  :bind (("C-c d" . 'file-info-show))
+  :config
+  (setq hydra-hint-display-type 'posframe)
+  (setq hydra-posframe-show-params `(:poshandler posframe-poshandler-frame-center
+                                                 :internal-border-width 2
+                                                 :internal-border-color "#61AFEF"
+                                                 :left-fringe 16
+                                                 :right-fringe 16)))
 
 (use-package dap-mode
   :ensure t
@@ -286,12 +339,8 @@ If OPEN-ANOTHER-WINDOW is not nil, the file will be opened in new window."
   :ensure t
   :config (global-wakatime-mode))
 
-(defun g-screenshot-on-buffer-creation ()
-  (setq display-fill-column-indicator-column nil)
-  (setq line-spacing nil))
-
 (use-package screenshot
-  ;; :straight (:type git :host github :repo "tecosaur/screenshot")
+  :straight (:type git :host github :repo "tecosaur/screenshot")
   :config 
   (setq screenshot-line-numbers-p nil)
   
@@ -311,11 +360,11 @@ If OPEN-ANOTHER-WINDOW is not nil, the file will be opened in new window."
   (setq screenshot-shadow-radius 8)
   (setq screenshot-shadow-offset-horizontal 1)
   (setq screenshot-shadow-offset-vertical 4)
-
   :hook((screenshot-buffer-creation-hook . g-screenshot-on-buffer-creation)))
 
-;; Straight package management
-(load-file "~/.emacs.d/plugins-settings/straight.el")
+(defun g-screenshot-on-buffer-creation ()
+  (setq display-fill-column-indicator-column nil)
+  (setq line-spacing nil))
 
 ;; Dired custom
 (load-file "~/.emacs.d/plugins-settings/dired-config.el")
@@ -325,7 +374,6 @@ If OPEN-ANOTHER-WINDOW is not nil, the file will be opened in new window."
 
 ;; Dashboard Config
 (load-file "~/.emacs.d/plugins-settings/dashboard-settigs.el")
-
 
 ;; IDEs settings
 (load-file "~/.emacs.d/plugins-settings/ides-settings.el")
@@ -340,12 +388,16 @@ If OPEN-ANOTHER-WINDOW is not nil, the file will be opened in new window."
 (load-file "~/.emacs.d/plugins-settings/doom-modeline-manual.el")
 
 ;; Centaur Tabs
-;; (load-file "~/.emacs.d/plugins-settings/centaur-tabs.el")
+(load-file "~/.emacs.d/plugins-settings/centaur-tabs.el")
 
 ;; Curtom function
 (load-file "~/.emacs.d/plugins-settings/custom-function.el")
+
 ;; Font ligatures
 (load-file "~/.emacs.d/plugins-settings/font-ligatures.el")
+
+;; Nofify
+(load-file "~/.emacs.d/plugins/notify.el")
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -355,16 +407,11 @@ If OPEN-ANOTHER-WINDOW is not nil, the file will be opened in new window."
  '(custom-safe-themes
    '("d77d6ba33442dd3121b44e20af28f1fae8eeda413b2c3d3b9f1315fbda021992" default))
  '(global-display-line-numbers-mode t)
- '(highlight-indent-guides-method 'character)
+ '(indent-bars-no-stipple-char-font-weight 'thin)
+ '(indent-bars-prefer-character t)
+ '(minimap-minimum-width 20)
+ '(minimap-window-location 'right)
  '(neo-autorefresh nil)
  '(neo-theme 'nerd)
- '(neo-window-width 25)
- '(package-selected-packages
-   '(embark-consult orderless embark consult marginalia vertico gruvbox-theme all-the-icons-nerd-fonts soothe-theme soothe-them catppuccin-theme 0blayout mu4e-alert doom-modeline nerd-icons flycheck-aspell js-import reformatter react-snippets company-web jtsx-jsx-mode yasnippet-snippets winum which-key web-mode wakatime-mode undo-tree try tide switch-window spaceline-all-the-icons smex smartparens rainbow-mode rainbow-delimiters quelpa-use-package nlinum neotree multiple-cursors minimap llm kaolin-themes jest-test-mode jest ido-vertical-mode highlight-numbers highlight-indent-guides highlight-defined helm-xref helm-lsp google-translate flycheck-posframe fix-word emmet-mode dotenv-mode dashboard dap-mode company-quickhelp blamer beacon auto-complete apheleia anzu))
- '(set-face-background 'highlight-indent-guides-even-face t)
- '(set-face-foreground 'highlight-indent-guides-character-face t)
- '(spaceline-all-the-icons-hide-long-buffer-path t)
- '(spaceline-all-the-icons-highlight-file-name t)
- '(spaceline-all-the-icons-separator-type 'slant)
+ '(neo-window-width 30)
  '(tool-bar-mode nil))
-
